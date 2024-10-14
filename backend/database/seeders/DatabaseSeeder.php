@@ -3,21 +3,34 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Appointment;
+use App\Models\AnimalType;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $this->call(RolesSeeder::class); // Roda o seeder de roles primeiro
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $dentist = User::factory()->create([
+            'name' => 'Dentist User',
+            'email' => 'dentist@example.com',
         ]);
+        $dentist->assignRole('doctor');
+
+        $receptionist = User::factory()->create([
+            'name' => 'Receptionist User',
+            'email' => 'receptionist@example.com',
+        ]);
+        $receptionist->assignRole('receptionist');
+
+        AnimalType::factory()->count(3)->create();
+
+        User::factory()->count(5)->create()->each(function ($user) {
+            Appointment::factory()->count(2)->create([
+                'user_id' => $user->id,
+            ]);
+        });
     }
 }
