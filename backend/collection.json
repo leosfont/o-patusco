@@ -1,0 +1,121 @@
+{
+    "info": {
+        "name": "Patusco API",
+        "description": "API for managing appointments and users in the veterinary clinic system",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Create Appointment and User",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/appointments",
+                    "host": ["{{base_url}}"],
+                    "path": ["appointments"]
+                },
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"johndoe@example.com\",\n  \"animal_name\": \"Buddy\",\n  \"animal_type_id\": 1,\n  \"animal_age\": 5,\n  \"symptoms\": \"Coughing\",\n  \"appointment_date\": \"2024-10-15\",\n  \"appointment_time\": \"morning\"\n}"
+                },
+                "description": "Creates a new appointment and registers a user"
+            }
+        },
+        {
+            "name": "List Appointments",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/user/appointments",
+                    "host": ["{{base_url}}"],
+                    "path": ["user", "appointments"]
+                },
+                "description": "Retrieves a list of appointments for authenticated users"
+            }
+        },
+        {
+            "name": "View Appointment",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/user/appointments/1",
+                    "host": ["{{base_url}}"],
+                    "path": ["user", "appointments", "1"]
+                },
+                "description": "Retrieves a specific appointment by ID"
+            }
+        },
+        {
+            "name": "Update Appointment",
+            "request": {
+                "method": "PUT",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}"
+                    },
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/user/appointments/1",
+                    "host": ["{{base_url}}"],
+                    "path": ["user", "appointments", "1"]
+                },
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"animal_name\": \"Buddy\",\n  \"symptoms\": \"Sneezing\",\n  \"appointment_date\": \"2024-10-16\",\n  \"appointment_time\": \"afternoon\"\n}"
+                },
+                "description": "Updates an appointment for an authenticated user"
+            }
+        },
+        {
+            "name": "Delete Appointment",
+            "request": {
+                "method": "DELETE",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/user/appointments/1",
+                    "host": ["{{base_url}}"],
+                    "path": ["user", "appointments", "1"]
+                },
+                "description": "Deletes an appointment for an authenticated user"
+            }
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost/api"
+        },
+        {
+            "key": "token",
+            "value": ""
+        }
+    ]
+}

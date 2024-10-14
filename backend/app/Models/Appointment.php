@@ -12,7 +12,7 @@ class Appointment extends Model
     protected $fillable = [
         'user_id',
         'animal_name',
-        'animal_type',
+        'animal_type_id',
         'animal_age',
         'symptoms',
         'appointment_date',
@@ -22,11 +22,16 @@ class Appointment extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class);
     }
 
     public function doctor()
     {
         return $this->belongsTo(User::class, 'doctor_id');
+    }
+
+    public function animalType()
+    {
+        return $this->belongsTo(AnimalType::class, 'animal_type_id');
     }
 }

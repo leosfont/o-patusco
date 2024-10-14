@@ -1,0 +1,20 @@
+{
+    "id": "0b5df6e8-789a-40a9-8b8b-2d1f403ddf42",
+    "name": "Localhost Environment",
+    "values": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8000/api",
+            "enabled": true
+        },
+        {
+            "key": "token",
+            "value": "",
+            "enabled": true
+        }
+    ],
+    "timestamp": 0,
+    "_postman_variable_scope": "environment",
+    "_postman_exported_at": "2024-10-12T14:00:00.000Z",
+    "_postman_exported_using": "Postman/10.0.0"
+}
