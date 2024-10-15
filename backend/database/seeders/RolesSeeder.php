@@ -1,5 +1,4 @@
 <?php
-
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
@@ -14,23 +13,22 @@ class RolesSeeder extends Seeder
         $receptionist = Role::create(['name' => 'receptionist']);
         $client = Role::create(['name' => 'client']);
 
-        Permission::create(['name' => 'view appointments']);
-        Permission::create(['name' => 'create appointments']);
-        Permission::create(['name' => 'edit appointments']);
-        Permission::create(['name' => 'delete appointments']);
-        Permission::create(['name' => 'assign doctor to appointments']);
-        
-        $doctor->givePermissionTo('view appointments');
-        $doctor->givePermissionTo('edit appointments');
+        Permission::create(['name' => 'appointments.index']);
+        Permission::create(['name' => 'appointments.store']);
+        Permission::create(['name' => 'appointments.update']);
+        Permission::create(['name' => 'appointments.destroy']);
+        Permission::create(['name' => 'users.index']);
+        Permission::create(['name' => 'doctors.index']);
 
-        $receptionist->givePermissionTo('view appointments');
-        $receptionist->givePermissionTo('create appointments');
-        $receptionist->givePermissionTo('edit appointments');
-        $receptionist->givePermissionTo('delete appointments');
-        $receptionist->givePermissionTo('assign doctor to appointments');
+        $doctor->givePermissionTo('appointments.index');
+        $doctor->givePermissionTo('appointments.update');
 
-        $client->givePermissionTo('view appointments');
-        $client->givePermissionTo('create appointments');
-        $client->givePermissionTo('delete appointments');
+        $receptionist->givePermissionTo('appointments.index');
+        $receptionist->givePermissionTo('appointments.store');
+        $receptionist->givePermissionTo('appointments.update');
+        $receptionist->givePermissionTo('appointments.destroy');
+
+        $client->givePermissionTo('appointments.index');
+        $client->givePermissionTo('appointments.store');
     }
 }

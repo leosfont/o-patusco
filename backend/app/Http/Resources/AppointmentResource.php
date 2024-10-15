@@ -21,12 +21,13 @@ class AppointmentResource extends JsonResource
             'animal_name' => $this->animal_name,
             'animal_type' => new AppointmentAnimalTypeResource($this->whenLoaded('animalType')),
             'doctor' => new AppointmentDoctorResource($this->whenLoaded('doctor')),
+            'responsible' => $this->user->name,
             'animal_age' => $this->animal_age,
             'symptoms' => $this->symptoms,
-            'appointment_date' => $this->appointment_date,
+            'appointment_date' => $this->appointment_date->format('d-m-Y'),
             'appointment_time' => $this->appointment_time,
-            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
+            'created_at' => $this->created_at->format('d-m-Y H:i:s'),
+            'updated_at' => $this->updated_at->format('d-m-Y H:i:s'),
         ];
     }
 }

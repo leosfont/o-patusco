@@ -22,7 +22,7 @@ class LoginTokenMail extends Mailable
 
     public function build()
     {
-        $frontendUrl = config('app.frontend_url') . '/login?token=' . $this->token;
+        $frontendUrl = config('app.frontend_url') . "/login/{$this->token}";
 
         return $this->markdown('emails.login-token')
                     ->subject('Access to the Platform')

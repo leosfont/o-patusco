@@ -3,12 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AccessLinkRequest;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\LoginTokenMail;
 
 class AuthController extends Controller
 {
+    public function getUserAuthenticated()
+    {
+        return new UserResource(auth()->user()->load('roles'));
+    }
+
+
     public function requestAccessLink(AccessLinkRequest $request)
     {
         $user = User::where('email', $request->email)->first();

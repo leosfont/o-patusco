@@ -9,7 +9,7 @@ class AnimalType extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['type_name'];
+    protected $fillable = ['name'];
 
     public function appointments()
     {

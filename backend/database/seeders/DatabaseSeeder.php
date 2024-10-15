@@ -11,7 +11,7 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->call(RolesSeeder::class); // Roda o seeder de roles primeiro
+        $this->call(RolesSeeder::class);
 
         $dentist = User::factory()->create([
             'name' => 'Dentist User',

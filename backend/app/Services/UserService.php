@@ -19,6 +19,7 @@ class UserService extends Service
         $data['password'] = Hash::make($data['password'] ?? str(random_int(0, 9)));
         $user = $this->repository->create($data);
         if ($user) {
+            $user->assignRole('client');
             $token = $user->createToken('auth_token')->plainTextToken;
             $this->sendLoginToken($user, $token);
         }

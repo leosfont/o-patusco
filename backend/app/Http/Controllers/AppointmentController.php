@@ -3,16 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreAppointmentRequest;
-use App\Http\Requests\AppointmentUpdateRequest;
 use App\Http\Requests\StoreAndRegisterUserRequest;
+use App\Http\Requests\UpdateAppointmentRequest;
 use App\Http\Resources\AppointmentResource;
 use App\Services\AppointmentService;
 use App\Models\Appointment;
 use App\Services\UserService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class AppointmentController extends Controller
 {
+    use AuthorizesRequests;
+
     protected $appointmentService;
     protected $userService;
 
@@ -24,8 +27,7 @@ class AppointmentController extends Controller
 
     public function index()
     {
-        $appointments = $this->appointmentService->getAll();
-        return AppointmentResource::collection($appointments);
+        return AppointmentResource::collection($this->appointmentService->getAppointmentsByRoleAuthUser());
     }
 
 
@@ -84,9 +86,8 @@ class AppointmentController extends Controller
         return new AppointmentResource($appointment);
     }
 
-    public function update(AppointmentUpdateRequest $request, Appointment $appointment)
+    public function update(UpdateAppointmentRequest $request, Appointment $appointment)
     {
-        $this->authorize('update', $appointment);
         $updatedAppointment = $this->appointmentService->update($appointment, $request->validated());
         return new AppointmentResource($updatedAppointment);
     }
@@ -94,7 +95,6 @@ class AppointmentController extends Controller
 
     public function destroy(Appointment $appointment)
     {
-        $this->authorize('delete', $appointment);
         $this->appointmentService->delete($appointment);
         return response()->json(['message' => 'Appointment deleted successfully']);
     }
