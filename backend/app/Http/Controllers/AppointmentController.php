@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreAppointmentRequest;
-use App\Http\Requests\StoreAndRegisterUserRequest;
+use App\Http\Requests\StoreFirstAppointmentRequest;
 use App\Http\Requests\UpdateAppointmentRequest;
 use App\Http\Resources\AppointmentResource;
 use App\Services\AppointmentService;
@@ -31,7 +31,7 @@ class AppointmentController extends Controller
     }
 
 
-    public function storeAndRegisterUser(StoreAndRegisterUserRequest $request)
+    public function createFirst(StoreFirstAppointmentRequest $request)
     {
         $fields = $request->validated();
 

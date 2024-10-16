@@ -12,6 +12,14 @@ class AuthControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+    
+        $this->seed();
+    }
+
     #[\PHPUnit\Framework\Attributes\Test]
     public function it_sends_access_link_if_user_exists(): void
     {

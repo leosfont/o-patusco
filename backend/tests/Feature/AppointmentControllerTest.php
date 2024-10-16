@@ -16,14 +16,14 @@ class AppointmentControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        // Executa as seeds antes de cada teste
+    
         $this->seed();
     }
 
     #[\PHPUnit\Framework\Attributes\Test]
-    public function it_can_create_an_appointment_and_register_a_user(): void
+    public function it_can_create_first_appointment(): void
     {
-        $animalType = AnimalType::factory()->create();
+        $animalType = AnimalType::first();
 
         $data = [
             'name' => 'John Doe',
@@ -34,10 +34,9 @@ class AppointmentControllerTest extends TestCase
             'symptoms' => 'Coughing and sneezing',
             'appointment_date' => '2024-10-20',
             'appointment_time' => 'morning',
-        
         ];
 
-        $response = $this->postJson('/api/appointments', $data);
+        $response = $this->postJson('/api/create-first-appointment', $data);
 
         $response->assertStatus(201);
 
@@ -65,26 +64,27 @@ class AppointmentControllerTest extends TestCase
             'animal_type_id' => $animalType->id,
             'animal_age' => 3,
             'symptoms' => 'Coughing and sneezing',
-            'appointment_date' => '2024-10-20',
-            'appointment_time' => 'manhã',
+            'appointment_date' => '2024-10-20 00:00:00',
+            'appointment_time' => 'morning',
+            'doctor_id' => null,
         ]);
     }
 
     #[\PHPUnit\Framework\Attributes\Test]
     public function it_can_list_appointments_for_authenticated_user(): void
     {
-        $animalType = AnimalType::factory()->create();
+        $animalType = AnimalType::first();
 
         $user = User::factory()->create();
-        $user->assignRole('client'); // Atribui a role 'client' ao usuário
+        $user->assignRole('receptionist');
         Sanctum::actingAs($user);
 
-        $appointments = Appointment::factory()->count(2)->create([
+        Appointment::factory()->count(2)->create([
             'user_id' => $user->id,
             'animal_type_id' => $animalType->id
         ]);
 
-        $response = $this->getJson('/api/user/appointments');
+        $response = $this->getJson('/api/appointments');
 
         $response->assertStatus(200);
 
@@ -98,59 +98,85 @@ class AppointmentControllerTest extends TestCase
     }
 
     #[\PHPUnit\Framework\Attributes\Test]
-    public function it_can_show_an_appointment(): void
+    public function it_can_create_an_appointment(): void
     {
-        $animalType = AnimalType::factory()->create();
-
+        $animalType = AnimalType::first();
         $user = User::factory()->create();
-        $user->assignRole('client'); // Atribui a role 'client' ao usuário
+        $user->assignRole('receptionist');
         Sanctum::actingAs($user);
+        $doctor = User::whereHas('roles', fn ($q) => $q->where('name', 'doctor'))->first();
+        $client = User::whereHas('roles', fn ($q) => $q->where('name', 'client'))->first();
+        $data = [
+            'animal_name' => 'Buddy',
+            'animal_type_id' => $animalType->id,
+            'animal_age' => 3,
+            'symptoms' => 'Coughing and sneezing',
+            'appointment_date' => '2024-10-20',
+            'appointment_time' => 'morning',
+            'doctor_id' => $doctor->id,
+            'user_id' => $client->id
+        ];
 
-        $appointment = Appointment::factory()->create([
-            'user_id' => $user->id,
-            'animal_type_id' => $animalType->id
-        ]);
+        $response = $this->postJson('/api/appointments', $data);
 
-        $response = $this->getJson("/api/user/appointments/{$appointment->id}");
+        
+        $response->assertStatus(201);
 
-        $response->assertStatus(200);
-
-        $response->assertJson([
+        
+        $response->assertJsonStructure([
             'data' => [
-                'id' => $appointment->id,
-                'animal_name' => $appointment->animal_name,
-                'animal_age' => $appointment->animal_age,
-                'symptoms' => $appointment->symptoms,
+                'id',
+                'user_id',
+                'animal_name',
+                'animal_age',
+                'symptoms',
+                'appointment_date',
+                'appointment_time',
+                'created_at',
+                'updated_at',
             ]
         ]);
+        
+        $this->assertDatabaseHas('appointments', [
+            'animal_name' => 'Buddy',
+            'animal_type_id' => $animalType->id,
+            'animal_age' => 3,
+            'symptoms' => 'Coughing and sneezing',
+            'appointment_date' => '2024-10-20 00:00:00',
+            'appointment_time' => 'morning',
+            'doctor_id' => $doctor->id,
+            'user_id' => $client->id
+        ]);
     }
-
+    
     #[\PHPUnit\Framework\Attributes\Test]
     public function it_can_update_an_appointment(): void
     {
-        $animalType = AnimalType::factory()->create();
-
+        $animalType = AnimalType::first();
+    
         $user = User::factory()->create();
-        $user->assignRole('client'); // Atribui a role 'client' ao usuário
+        $user->assignRole('receptionist');
         Sanctum::actingAs($user);
-
+    
         $appointment = Appointment::factory()->create([
             'user_id' => $user->id,
             'animal_type_id' => $animalType->id
         ]);
-
+    
+        
         $data = [
             'animal_name' => 'Updated Buddy',
             'animal_age' => 4,
             'symptoms' => 'Updated symptoms',
-            'appointment_date' => '2024-10-21',
-            'appointment_time' => 'tarde', // Certifique-se de usar "manhã" ou "tarde"
+            'appointment_date' => '2024-10-21 00:00:00',
+            'appointment_time' => 'morning',
+            'doctor_id' => 1 
         ];
-
-        $response = $this->putJson("/api/user/appointments/{$appointment->id}", $data);
-
+    
+        $response = $this->putJson("/api/appointments/{$appointment->id}", $data);
+    
         $response->assertStatus(200);
-
+    
         $response->assertJson([
             'data' => [
                 'animal_name' => 'Updated Buddy',
@@ -158,7 +184,7 @@ class AppointmentControllerTest extends TestCase
                 'symptoms' => 'Updated symptoms',
             ]
         ]);
-
+    
         $this->assertDatabaseHas('appointments', [
             'id' => $appointment->id,
             'animal_name' => 'Updated Buddy',
@@ -170,10 +196,10 @@ class AppointmentControllerTest extends TestCase
     #[\PHPUnit\Framework\Attributes\Test]
     public function it_can_delete_an_appointment(): void
     {
-        $animalType = AnimalType::factory()->create();
+        $animalType = AnimalType::first();
 
         $user = User::factory()->create();
-        $user->assignRole('receptionist'); // Atribui a role 'receptionist' ao usuário
+        $user->assignRole('receptionist');
         Sanctum::actingAs($user);
 
         $appointment = Appointment::factory()->create([
@@ -181,7 +207,7 @@ class AppointmentControllerTest extends TestCase
             'animal_type_id' => $animalType->id
         ]);
 
-        $response = $this->deleteJson("/api/user/appointments/{$appointment->id}");
+        $response = $this->deleteJson("/api/appointments/{$appointment->id}");
 
         $response->assertStatus(200);
 

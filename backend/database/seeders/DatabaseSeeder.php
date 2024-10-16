@@ -13,11 +13,11 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(RolesSeeder::class);
 
-        $dentist = User::factory()->create([
-            'name' => 'Dentist User',
-            'email' => 'dentist@example.com',
+        $doctor = User::factory()->create([
+            'name' => 'Doctor User',
+            'email' => 'doctor@example.com',
         ]);
-        $dentist->assignRole('doctor');
+        $doctor->assignRole('doctor');
 
         $receptionist = User::factory()->create([
             'name' => 'Receptionist User',
@@ -27,10 +27,12 @@ class DatabaseSeeder extends Seeder
 
         AnimalType::factory()->count(3)->create();
 
-        User::factory()->count(5)->create()->each(function ($user) {
+        User::factory()->count(5)->create()->each(function ($user) use ($doctor) {
             Appointment::factory()->count(2)->create([
                 'user_id' => $user->id,
+                'doctor_id' => $doctor->id
             ]);
+            $user->assignRole('client');
         });
     }
 }

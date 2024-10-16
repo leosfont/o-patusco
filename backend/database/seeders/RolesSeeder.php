@@ -17,7 +17,7 @@ class RolesSeeder extends Seeder
         Permission::create(['name' => 'appointments.store']);
         Permission::create(['name' => 'appointments.update']);
         Permission::create(['name' => 'appointments.destroy']);
-        Permission::create(['name' => 'users.index']);
+        Permission::create(['name' => 'clients.index']);
         Permission::create(['name' => 'doctors.index']);
 
         $doctor->givePermissionTo('appointments.index');
@@ -27,6 +27,8 @@ class RolesSeeder extends Seeder
         $receptionist->givePermissionTo('appointments.store');
         $receptionist->givePermissionTo('appointments.update');
         $receptionist->givePermissionTo('appointments.destroy');
+        $receptionist->givePermissionTo('clients.index');
+        $receptionist->givePermissionTo('doctors.index');
 
         $client->givePermissionTo('appointments.index');
         $client->givePermissionTo('appointments.store');
