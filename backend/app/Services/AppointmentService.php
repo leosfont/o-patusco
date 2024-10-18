@@ -17,26 +17,24 @@ class AppointmentService extends Service
 
     public function getAppointmentsByRoleAuthUser()
     {
-        $user = auth()->user()->load('roles');
+        $user = auth()->user();
         $query = null;
     
-        if ($user->hasRole('recepcionist')) {
+        if ($user->hasRole('receptionist')) {
             $query = $this->repository->getQuery();
         } elseif ($user->hasRole('doctor')) {
             $query = $this->repository->getQueryByDoctorId($user->id);
         } else {
             $query = $this->repository->getQueryByUserId($user->id);
         }
-
-        $query = $this->repository->getQuery();
     
         $query->with('user', 'doctor', 'animalType');
-    
-        if (request()->has('appointment_date')) {
+
+        if (request()->has('appointment_date') && request('appointment_date')) {
             $query->whereDate('appointment_date', request('appointment_date'));
         }
     
-        if (request()->has('animal_type_id')) {
+        if (request()->has('animal_type_id') && request('animal_type_id')) {
             $query->where('animal_type_id', request('animal_type_id'));
         }
     

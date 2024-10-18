@@ -11,12 +11,12 @@
     </button>
 
     <p class="mt-4 text-gray-600">
-      🔍 Quer ver suas consultas agendadas? <a @click="requestAccess" class="text-blue-500 hover:underline cursor-pointer">Solicite seu acesso aqui</a>.
+      🔍 Quer ver suas consultas agendadas? <a @click="openRequestAccessModal" class="text-blue-500 hover:underline cursor-pointer">Solicite seu acesso aqui</a>.
     </p>
 
-    <Modal :isOpen="showModal" @close="showModal = false">
+    <Modal :isOpen="showFirstAppointmentModal" @close="showFirstAppointmentModal = false">
       <template #title>🩺 Agende sua primeira consulta</template>
-      <AppointmentForm />
+      <FirstAppointmentForm />
     </Modal>
 
     <Modal :isOpen="showAccessModal" @close="showAccessModal = false">
@@ -29,28 +29,28 @@
 <script lang="ts">
 import { ref } from 'vue';
 import Modal from '@/components/Modal.vue';
-import AppointmentForm from '@/components/AppointmentForm.vue';
 import RequestAccessForm from '@/components/RequestAccessForm.vue';
+import FirstAppointmentForm from '@/components/FirstAppointmentForm.vue';
 
 export default {
-  components: { Modal, AppointmentForm, RequestAccessForm },
+  components: { Modal, FirstAppointmentForm, RequestAccessForm },
   setup() {
-    const showModal = ref(false);
+    const showFirstAppointmentModal = ref(false);
     const showAccessModal = ref(false);
 
     const openAppointmentModal = () => {
-      showModal.value = true;
+      showFirstAppointmentModal.value = true;
     };
 
-    const requestAccess = () => {
+    const openRequestAccessModal = () => {
       showAccessModal.value = true;
     };
 
     return {
-      showModal,
+      showFirstAppointmentModal,
       openAppointmentModal,
       showAccessModal,
-      requestAccess,
+      openRequestAccessModal,
     };
   },
 };

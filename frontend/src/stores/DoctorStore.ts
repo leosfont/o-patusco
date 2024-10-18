@@ -12,7 +12,7 @@ export const useDoctorStore = defineStore('doctor', () => {
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/doctors`);
       doctors.value = response.data.data;
     } catch (error) {
-      errorMessages.value.push('Erro ao buscar doutores.');
+      errorMessages.value.push('Erro ao buscar médicos.');
     }
   };
 

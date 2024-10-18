@@ -1,60 +1,102 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
 import axios from 'axios';
+import { ref } from 'vue';
+import type { AppointmentFilter } from '@/interfaces/AppointmentFilter';
 
 export const useAppointmentStore = defineStore('appointment', () => {
-  const name = ref('');
-  const email = ref('');
-  const animalName = ref('');
-  const animalTypeId = ref('');
-  const animalAge = ref('');
-  const symptoms = ref('');
-  const appointmentDate = ref('');
-  const appointmentTime = ref('');
-  const errorMessages = ref<string[]>([]);
-  const animalAges = ref([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-  const showSuccessSubmit = ref(false);
+  const appointments = ref<any[]>([]);
+  const pagination = ref({
+    current_page: 1,
+    last_page: 1,
+    total: 0,
+  });
 
-  const createFirstAppointment = async () => {
-    errorMessages.value = [];
+  const animalAges = ref(Array.from({ length: 20 }, (_, i) => i + 1));
+
+  const createFirstAppointment = async (appointmentData: any) => {
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/appointments`, {
-        name: name.value,
-        email: email.value,
-        animal_name: animalName.value,
-        animal_type_id: animalTypeId.value,
-        animal_age: animalAge.value,
-        symptoms: symptoms.value,
-        appointment_date: appointmentDate.value,
-        appointment_time: appointmentTime.value,
+      await axios.post(`${import.meta.env.VITE_API_URL}/create-first-appointment`, {
+        name: appointmentData.name,
+        email: appointmentData.email,
+        animal_name: appointmentData.animal_name,
+        animal_type_id: appointmentData.animal_type_id,
+        animal_age: appointmentData.animal_age,
+        symptoms: appointmentData.symptoms,
+        appointment_date: appointmentData.appointment_date,
+        appointment_time: appointmentData.appointment_time,
       });
-      showSuccessSubmit.value = true;
     } catch (error: any) {
-      if (error.response && error.response.status === 422) {
-        const validationErrors = error.response.data.errors;
-        for (const key in validationErrors) {
-          validationErrors[key].forEach((msg: string) => {
-            errorMessages.value.push(msg);
-          });
-        }
-      } else {
-        errorMessages.value.push('Erro ao enviar o formulário.');
-      }
+      throw error;
+    }
+  };
+
+  const createAppointment = async (appointmentData: any) => {
+    try {
+      await axios.post(`${import.meta.env.VITE_API_URL}/appointments`, appointmentData);
+      await fetchAppointments(pagination.value.current_page);
+    } catch (error: any) {
+      throw error;
+    }
+  };
+
+
+  const fetchAppointments = async (page = 1, filters: AppointmentFilter = {}) => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/appointments`, {
+        params: {
+          page,
+          ...filters,
+        },
+      });
+      appointments.value = response.data.data;
+      pagination.value = {
+        current_page: response.data.meta.current_page,
+        last_page: response.data.meta.last_page,
+        total: response.data.meta.total,
+      };
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const deleteAppointment = async (id: string) => {
+    try {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/appointments/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      fetchAppointments(pagination.value.current_page);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const updateAppointment = async (id: string, appointmentData: any) => {
+    try {
+      await axios.put(`${import.meta.env.VITE_API_URL}/appointments/${id}`, {
+        doctor_id: appointmentData.doctor_id,
+        animal_name: appointmentData.animal_name, 
+        animal_age: appointmentData.animal_age,
+        animal_type_id: appointmentData.animal_type_id,
+        appointment_date: appointmentData.appointment_date,
+        appointment_time: appointmentData.appointment_time,
+        symptoms: appointmentData.symptoms,
+      });
+      fetchAppointments(pagination.value.current_page);
+    } catch (error) {
+      throw error;
     }
   };
 
   return {
-    name,
-    email,
-    animalName,
-    animalTypeId,
-    animalAge,
-    symptoms,
-    appointmentDate,
-    appointmentTime,
+    appointments,
+    pagination,
     animalAges,
-    errorMessages,
+    createAppointment,
+    fetchAppointments,
+    deleteAppointment,
+    updateAppointment,
     createFirstAppointment,
-    showSuccessSubmit,
   };
 });

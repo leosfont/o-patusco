@@ -1,37 +1,28 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
 import axios from 'axios';
 import router from '@/router';
+import { ref } from 'vue';
 
 export const useAuthStore = defineStore('auth', () => {
-  const email = ref('');
-  const errorMessages = ref<string[]>([]);
-  const successMessage = ref('');
   const token = ref('');
   const isAuthenticated = ref(false);
 
-  const requestAccessLink = async () => {
-    errorMessages.value = [];
-    successMessage.value = '';
-
+  const requestAccessLink = async (email: string) => {
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/request-access-link`, {
-        email: email.value,
-      });
-
-      successMessage.value = 'Um link de acesso foi enviado para o seu e-mail.';
-      email.value = '';
+      await axios.post(`${import.meta.env.VITE_API_URL}/request-access-link`, { email });
     } catch (error: any) {
+      const errorMessages: string[] = [];
       if (error.response && error.response.status === 422) {
         const validationErrors = error.response.data.errors;
         for (const key in validationErrors) {
           validationErrors[key].forEach((msg: string) => {
-            errorMessages.value.push(msg);
+            errorMessages.push(msg);
           });
         }
       } else {
-        errorMessages.value.push('Erro ao enviar a solicitação de acesso.');
+        errorMessages.push('Erro ao enviar a solicitação de acesso.');
       }
+      throw errorMessages;
     }
   };
 
@@ -42,9 +33,9 @@ export const useAuthStore = defineStore('auth', () => {
 
       localStorage.setItem('token', token.value);
 
-      router.push('/user/appointments');
+      router.push('/appointments');
     } catch (error: any) {
-      errorMessages.value.push('Token inválido ou expirado.');
+      throw new Error('Token inválido ou expirado.');
     }
   };
 
@@ -55,9 +46,6 @@ export const useAuthStore = defineStore('auth', () => {
   };
 
   return {
-    email,
-    errorMessages,
-    successMessage,
     token,
     isAuthenticated,
     requestAccessLink,

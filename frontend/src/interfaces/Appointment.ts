@@ -11,6 +11,7 @@ export interface Appointment {
     animal_age: number;
     symptoms: string;
     appointment_date: string;
+    appointment_date_dmy: string;
     appointment_time: 'morning' | 'afternoon';
     created_at: string;
     updated_at: string;

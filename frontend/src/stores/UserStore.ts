@@ -4,21 +4,25 @@ import axios from 'axios';
 import type { User } from '@/interfaces/User';
 
 export const useUserStore = defineStore('user', () => {
+  const user = ref<User | null>(null);
+  const userRoles = ref<string[]>([]);
   const users = ref<User[]>([]);
   const errorMessages = ref<string[]>([]);
 
-  const fetchUsers = async () => {
+  const fetchUser = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/users`);
-      users.value = response.data.data;
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/user`);
+      user.value = response.data.data;
+      userRoles.value = response.data.data.roles;
     } catch (error) {
-      errorMessages.value.push('Erro ao buscar clientes.');
+      errorMessages.value.push('Erro ao buscar cliente.');
     }
   };
 
   return {
-    users,
+    user,
+    userRoles,
     errorMessages,
-    fetchUsers,
+    fetchUser,
   };
 });

@@ -10,7 +10,7 @@ const routes = [
     component: HomeView,
   },
   {
-    path: '/user/appointments',
+    path: '/appointments',
     name: 'appointments',
     component: AppointmentsView,
     beforeEnter: (to, from, next) => {
@@ -28,9 +28,8 @@ const routes = [
     beforeEnter: async (to, from, next) => {
       const authStore = useAuthStore();
       try {
-        // Autentica o usuário com o token da URL
         await authStore.loginWithToken(to.params.token);
-        next('/user/appointments'); // Redireciona para appointments após o login
+        next('/appointments'); 
       } catch (error) {
         console.error('Erro ao autenticar com o token:', error);
         next('/');
